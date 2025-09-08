@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -301,4 +300,3 @@ vite.config.ts.timestamp-*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
->>>>>>> 9369d40 (Resolve merge conflict)
