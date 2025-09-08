@@ -16,7 +16,7 @@ test('closes on Close button and backdrop click', () => {
   const onClose = jest.fn();
   render(<Modal open title="Close me" onClose={onClose}>Body</Modal>);
   fireEvent.click(screen.getByRole('button', { name: /Close dialog/i }));
-  fireEvent.click(document.querySelector('.modal__backdrop') as HTMLElement);
+  fireEvent.click(screen.getByTestId('modal-backdrop'));
   expect(onClose).toHaveBeenCalledTimes(2);
 });
 
