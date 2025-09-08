@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-=======
-// src/components/board/__tests__/Column.test.tsx
->>>>>>> a4b6200 (Add Jest setup and tests)
 import { render, screen } from '@testing-library/react';
 import { Column } from '../board/Column';
 import type { TodoTaskDto } from '../../types/todoTask';
-
 const makeTask = (id: number, title: string): TodoTaskDto => ({
   id,
   title,
