@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\components",
+    "\\src\\components\\common",
+    "\\src\\components\\form",
+    "\\src\\pages",
+    "\\src\\services",
+    "\\src\\styles",
+    "\\src\\types",
+    "\\src\\validators"
+  ],
+  "SelectedNode": "\\src\\validators\\todoTaskValidators.ts",
+  "PreviewInSolutionExplorer": false
+}
