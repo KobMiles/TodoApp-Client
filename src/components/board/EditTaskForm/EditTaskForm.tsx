@@ -3,7 +3,8 @@ import type { TodoTaskDto } from '../../../types/todoTask';
 import { Status } from '../../../types/todoTask';
 import { FormErrorSummary } from '../../form/FormErrorSummary';
 import { UpdateTodoTaskClientSchema, getFieldErrors } from '../../../validators/todoTaskValidators';
-import { buildTimeOptions, combineLocalToWire, toLocalDateTimeParts, pad } from '../../../utils/dateTime';
+import { toLocalDateTimeParts, combineLocalToWire, buildTimeOptions, pad } from '../../../utils/dateTime';
+import { DueQuickActions } from '../../form/DueQuickActions';
 
 const TIME_OPTS = buildTimeOptions();
 
@@ -31,6 +32,7 @@ export function EditTaskForm({
     setDatePart(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`);
     setTimePart('09:00');
   };
+  const noDue = () => { setDatePart(''); setTimePart(''); };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,9 +53,8 @@ export function EditTaskForm({
   };
 
   return (
-    <form className="modal__body" role="form" aria-labelledby="modal-title" noValidate onSubmit={handleSubmit}>
+    <form className="modal__body" aria-labelledby="modal-title" noValidate onSubmit={handleSubmit}>
       <FormErrorSummary errors={errors} heading="Cannot save task" id="edit-error-summary" />
-
       <div className="modal__row">
         <label className="modal__label" htmlFor="f-title">Title</label>
         <input
@@ -65,7 +66,6 @@ export function EditTaskForm({
           aria-describedby={errors.title ? 'edit-error-summary' : undefined}
         />
       </div>
-
       <div className="modal__row">
         <label className="modal__label" htmlFor="f-desc">Description</label>
         <textarea
@@ -78,7 +78,6 @@ export function EditTaskForm({
           aria-describedby={errors.description ? 'edit-error-summary' : undefined}
         />
       </div>
-
       <div className="modal__row">
         <label className="modal__label" htmlFor="f-status">Status</label>
         <select
@@ -92,7 +91,6 @@ export function EditTaskForm({
           <option value={Status.Done}>Done</option>
         </select>
       </div>
-
       <div className="modal__row board__date-row">
         <label className="modal__label" htmlFor="f-date">Due date</label>
         <input
@@ -113,12 +111,8 @@ export function EditTaskForm({
           <option value="">--:--</option>
           {TIME_OPTS.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
-        <div className="quick-actions">
-          <button type="button" className="btn-ghost" onClick={today1800}>Today 18:00</button>
-          <button type="button" className="btn-ghost" onClick={tomorrow0900}>Tomorrow 09:00</button>
-        </div>
+        <DueQuickActions onToday18={today1800} onTomorrow09={tomorrow0900} onNoDue={noDue} />
       </div>
-
       <div className="board__form-actions">
         <button type="button" className="btn-ghost" onClick={onCancel}>Cancel</button>
         <button type="submit" className="btn btn--primary">Save</button>

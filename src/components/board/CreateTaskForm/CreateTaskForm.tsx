@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import type { CreateTodoTaskDto } from '../../../types/todoTask';
 import { FormErrorSummary } from '../../form/FormErrorSummary';
 import { CreateTodoTaskClientSchema, getFieldErrors } from '../../../validators/todoTaskValidators';
-import { combineLocalToWire, pad } from '../../../utils/dateTime';
-import { buildTimeOptions } from '../../../utils/dateTime';
+import { combineLocalToWire, pad, buildTimeOptions } from '../../../utils/dateTime';
+import { DueQuickActions } from '../../form/DueQuickActions';
 
 const TIME_OPTS = buildTimeOptions();
 
@@ -38,11 +38,7 @@ export function CreateTaskForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const dueWire = combineLocalToWire(datePart, timePart);
-    const candidate = {
-      title,
-      description,
-      dueDate: dueWire ?? undefined,
-    };
+    const candidate = { title, description, dueDate: dueWire ?? undefined };
     const res = CreateTodoTaskClientSchema.safeParse(candidate);
     if (!res.success) {
       setErrors(getFieldErrors(res.error));
@@ -54,7 +50,6 @@ export function CreateTaskForm({
   return (
     <form className="modal__body" role="form" aria-labelledby="modal-title" noValidate onSubmit={handleSubmit}>
       <FormErrorSummary errors={errors} heading="Cannot create task" id="create-error-summary" />
-
       <div className="modal__row">
         <label className="modal__label" htmlFor="c-title">Title</label>
         <input
@@ -66,7 +61,6 @@ export function CreateTaskForm({
           aria-describedby={errors.title ? 'create-error-summary' : undefined}
         />
       </div>
-
       <div className="modal__row">
         <label className="modal__label" htmlFor="c-desc">Description</label>
         <textarea
@@ -79,7 +73,6 @@ export function CreateTaskForm({
           aria-describedby={errors.description ? 'create-error-summary' : undefined}
         />
       </div>
-
       <div className="modal__row board__date-row">
         <label className="modal__label" htmlFor="c-date">Due date</label>
         <input
@@ -100,13 +93,8 @@ export function CreateTaskForm({
           <option value="">--:--</option>
           {TIME_OPTS.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
-        <div className="quick-actions">
-          <button type="button" className="btn-ghost" onClick={today1800}>Today 18:00</button>
-          <button type="button" className="btn-ghost" onClick={tomorrow0900}>Tomorrow 09:00</button>
-          <button type="button" className="btn-ghost" onClick={noDue}>No due</button>
-        </div>
+        <DueQuickActions onToday18={today1800} onTomorrow09={tomorrow0900} onNoDue={noDue} />
       </div>
-
       <div className="board__form-actions">
         <button type="button" className="btn-ghost" onClick={onCancel}>Cancel</button>
         <button type="submit" className="btn btn--primary">Create</button>
