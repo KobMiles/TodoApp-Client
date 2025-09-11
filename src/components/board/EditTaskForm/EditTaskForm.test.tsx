@@ -5,7 +5,7 @@ import { Status } from '../../../types/todoTask';
 
 jest.mock('../../../utils/dateTime', () => ({
   buildTimeOptions: jest.fn(() => ['09:00', '18:00']),
-  toLocalDateTimeParts: jest.fn(), // set in beforeEach
+  toLocalDateTimeParts: jest.fn(), 
   combineLocalToWire: jest.fn((date, time) => (date ? `${date}T${time || '00:00'}:00` : null)),
   pad: jest.fn((n) => String(n).padStart(2, '0')),
 }));
@@ -31,7 +31,7 @@ describe('EditTaskForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     const { toLocalDateTimeParts } = require('../../../utils/dateTime');
-    toLocalDateTimeParts.mockReturnValue({ date: '2023-12-25', time: '09:00' }); // <— guarantee shape
+    toLocalDateTimeParts.mockReturnValue({ date: '2023-12-25', time: '09:00' });
   });
 
   test('submits valid data', async () => {
