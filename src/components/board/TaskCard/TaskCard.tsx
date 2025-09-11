@@ -1,7 +1,14 @@
 import type { TodoTaskDto } from '../../../types/todoTask';
 
-const ellipsize = (txt?: string | null, n = 80) =>
-  !txt ? 'No description' : (txt.length > n ? txt.slice(0, n - 1) + '…' : txt);
+const ellipsize = (txt?: string | null, n = 80) => {
+  if (!txt) {
+    return 'No description';
+  }
+  if (txt.length > n) {
+    return txt.slice(0, n - 1) + '…';
+  }
+  return txt;
+};
 
 const dtf = new Intl.DateTimeFormat(navigator.language, {
   year: 'numeric',

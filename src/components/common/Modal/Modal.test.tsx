@@ -1,37 +1,84 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Modal } from './Modal';
 
-test('returns null when closed', () => {
-  const { container } = render(<Modal open={false} title="X" onClose={() => {}}>Body</Modal>);
-  
-  expect(container.firstChild).toBeNull();
-});
+describe('Modal', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
+      const id = setTimeout(() => cb(performance.now()), 0) as unknown as number;
+      return id;
+    });
+  });
 
-test('renders dialog with title when open', () => {
-  render(<Modal open title="My Modal" onClose={() => {}}>Body</Modal>);
+  afterEach(() => {
+    (window.requestAnimationFrame as any).mockRestore?.();
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
 
-  expect(screen.getByRole('dialog')).toBeInTheDocument();
-  expect(screen.getByText('My Modal')).toBeInTheDocument();
-});
+  test('renders dialog with title and children when open', () => {
+    render(
+      <Modal open title="My Dialog" onClose={() => {}}>
+        <div>Content</div>
+      </Modal>
+    );
+    expect(screen.getByRole('dialog', { name: 'My Dialog' })).toBeInTheDocument();
+    expect(screen.getByText('Content')).toBeInTheDocument();
+  });
 
-test('closes on Close button and backdrop click', () => {
-  const onClose = jest.fn();
+  test('clicking backdrop calls onClose', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const onClose = jest.fn();
+    render(
+      <Modal open title="Dlg" onClose={onClose}>
+        <div>Body</div>
+      </Modal>
+    );
+    const backdrop = document.querySelector('.modal__backdrop') as HTMLElement;
+    await user.click(backdrop);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
 
-  render(<Modal open title="Close me" onClose={onClose}>Body</Modal>);
+  test('pressing Escape closes the dialog', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const onClose = jest.fn();
+    render(
+      <Modal open title="Dlg" onClose={onClose}>
+        <div>Body</div>
+      </Modal>
+    );
+    await user.keyboard('{Escape}');
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
 
-  fireEvent.click(screen.getByRole('button', { name: /Close dialog/i }));
+  test('focuses close button by default after rAF', () => {
+    render(
+      <Modal open title="Dlg" onClose={() => {}}>
+        <input id="field-a" />
+      </Modal>
+    );
+    jest.runAllTimers();
+    expect(screen.getByRole('button', { name: /close dialog/i })).toHaveFocus();
+  });
 
-  fireEvent.click(document.querySelector('.modal__backdrop') as HTMLElement);
+  test('focuses element by initialFocusId', () => {
+    render(
+      <Modal open title="Dlg" onClose={() => {}} initialFocusId="field-a">
+        <input id="field-a" />
+      </Modal>
+    );
+    jest.runAllTimers();
+    const target = document.getElementById('field-a') as HTMLElement;
+    expect(target).toHaveFocus();
+  });
 
-  expect(onClose).toHaveBeenCalledTimes(2);
-});
-
-test('closes on Escape key', () => {
-  const onClose = jest.fn();
-
-  render(<Modal open title="Esc" onClose={onClose}>Body</Modal>);
-
-  fireEvent.keyDown(document, { key: 'Escape' });
-
-  expect(onClose).toHaveBeenCalledTimes(1);
+  test('returns null when closed', () => {
+    const { container } = render(
+      <Modal open={false} title="Dlg" onClose={() => {}}>
+        <div>Body</div>
+      </Modal>
+    );
+    expect(container.firstChild).toBeNull();
+  });
 });

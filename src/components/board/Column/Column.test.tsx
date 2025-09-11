@@ -1,15 +1,17 @@
 import { render, screen } from '@testing-library/react';
 import { Column } from './Column';
 import type { TodoTaskDto } from '../../../types/todoTask';
-const makeTask = (id: number, title: string): TodoTaskDto => ({
-  id,
-  title,
-  description: null,
-  dueDate: null,
-  status: 0,
-  createdAt: new Date().toISOString(),
-  completedAt: null
-});
+const makeTask = (id: number, title: string): TodoTaskDto => {
+  return {
+    id,
+    title,
+    description: null,
+    dueDate: null,
+    status: 0,
+    createdAt: new Date().toISOString(),
+    completedAt: null,
+  };
+};
 
 test('renders column title, subtitle and tasks count', () => {
   const tasks = [makeTask(1, 'A'), makeTask(2, 'B')];

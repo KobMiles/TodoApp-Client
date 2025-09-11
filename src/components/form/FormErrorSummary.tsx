@@ -12,10 +12,14 @@ export function FormErrorSummary({
   onClose?: () => void;
 }) {
   const items = React.useMemo(
-    () => Array.from(new Set(Object.values(errors).filter(Boolean))),
+    () => {
+      return Array.from(new Set(Object.values(errors).filter(Boolean)));
+    },
     [errors]
   );
-  if (items.length === 0) return null;
+  if (items.length === 0) {
+    return null;
+  }
 
   return (
     <div id={id} role="alert" aria-live="polite" className="field-error-summary">

@@ -13,9 +13,13 @@ export function Modal({ open, title, onClose, children, initialFocusId }: ModalP
   onCloseRef.current = onClose;
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      return;
+    }
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onCloseRef.current();
+      if (e.key === 'Escape') {
+        onCloseRef.current();
+      }
     };
     document.addEventListener('keydown', onKey);
     const id = initialFocusId ? `#${initialFocusId}` : '';
@@ -28,7 +32,9 @@ export function Modal({ open, title, onClose, children, initialFocusId }: ModalP
     };
   }, [open, initialFocusId]);
 
-  if (!open) return null;
+  if (!open) {
+    return null;
+  }
   return (
     <div className="modal" aria-hidden={!open}>
       <div className="modal__backdrop" onClick={() => onCloseRef.current()} />

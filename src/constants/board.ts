@@ -10,7 +10,14 @@ export const COLUMN_TITLES: Record<ColumnId, string> = {
   done: 'Done',
 };
 
-export const statusToColumn = (s: Status): ColumnId =>
-  s === Status.Todo ? 'todo' : s === Status.InProgress ? 'inProgress' : 'done';
+export const statusToColumn = (s: Status): ColumnId => {
+  if (s === Status.Todo) {
+    return 'todo';
+  }
+  if (s === Status.InProgress) {
+    return 'inProgress';
+  }
+  return 'done';
+};
 
 export {};

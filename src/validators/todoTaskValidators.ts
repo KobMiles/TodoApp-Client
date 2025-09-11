@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Status, type CreateTodoTaskDto, type UpdateTodoTaskDto } from '../types/todoTask';
+import { Status } from '../types/todoTask';
 
 const MESSAGES = {
   required: (p: string) => `${p} is required`,
@@ -22,42 +22,47 @@ const DescriptionSchema = z.preprocess(
     }
     return v;
   },
-  z.string().max(4000, MESSAGES.maxLen('Description', 4000)).nullable().optional()
+  z.string().max(4000, MESSAGES.maxLen('Description', 4000)).optional().nullable()
 );
 
 const WireDueDateSchema = z.preprocess(
   (v) => (v === '' || v === null || v === undefined ? undefined : v),
-  z
-    .string()
-    .refine((s) => !Number.isNaN(new Date(s).getTime()), { message: 'Invalid date' })
-    .refine((s) => new Date(s).getTime() >= Date.now(), { message: MESSAGES.duePast })
-    .nullable()
-    .optional()
+  z.string().optional().nullable()
 );
 
-export const CreateTodoTaskClientSchema = z
-  .object({
-    title: TitleSchema,
-    description: DescriptionSchema,
-    dueDate: WireDueDateSchema,
-  })
-  .strict();
+export const CreateTodoTaskClientSchema = z.object({
+  title: TitleSchema,
+  description: DescriptionSchema,
+  dueDate: WireDueDateSchema.refine(
+    (s) =>
+      s === undefined ||
+      (!Number.isNaN(new Date(s as string).getTime()) &&
+        new Date(s as string).getTime() >= Date.now()),
+    { message: MESSAGES.duePast }
+  ),
+});
 
-export type CreateTodoTaskClient = z.infer<typeof CreateTodoTaskClientSchema> & Pick<CreateTodoTaskDto, 'title' | 'description' | 'dueDate'>;
+export type CreateTodoTaskClient = z.infer<typeof CreateTodoTaskClientSchema>;
 
-export const UpdateTodoTaskClientSchema = z
-  .object({
-    id: z.number(),
-    title: TitleSchema,
-    description: DescriptionSchema,
-    dueDate: WireDueDateSchema,
-    status: z.nativeEnum(Status),
-    createdAt: z.string(),
-    completedAt: z.string().nullable().optional(),
-  })
-  .strict();
+const allowedStatus = [Status.Todo, Status.InProgress, Status.Done] as const;
+const StatusSchema: z.ZodType<Status> = z
+  .number()
+  .int()
+  .refine((v): v is Status => (allowedStatus as readonly number[]).includes(v), {
+    message: 'Invalid status',
+  });
 
-export type UpdateTodoTaskClient = z.infer<typeof UpdateTodoTaskClientSchema> & UpdateTodoTaskDto;
+export const UpdateTodoTaskClientSchema = z.object({
+  id: z.number(),
+  title: TitleSchema,
+  description: DescriptionSchema,
+  dueDate: WireDueDateSchema,
+  status: StatusSchema,
+  createdAt: z.string(),
+  completedAt: z.string().nullable().optional(),
+});
+
+export type UpdateTodoTaskClient = z.infer<typeof UpdateTodoTaskClientSchema>;
 
 export function getFieldErrors(err: z.ZodError) {
   const map: Record<string, string> = {};

@@ -1,8 +1,15 @@
 import type { TodoTaskDto } from '../../../types/todoTask';
 import { Status } from '../../../types/todoTask';
 
-const statusText = (s: Status) =>
-  s === Status.Todo ? 'Todo' : s === Status.InProgress ? 'In Progress' : 'Done';
+const statusText = (s: Status) => {
+  if (s === Status.Todo) {
+    return 'Todo';
+  }
+  if (s === Status.InProgress) {
+    return 'In Progress';
+  }
+  return 'Done';
+};
 
 export function TaskDetails({
   task,
